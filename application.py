@@ -36,7 +36,7 @@ db = SQL(os.environ.get("DATABASE_URL") or "sqlite:///finance.db")
 @app.route("/")
 @login_required
 def index():
-    rows = db.execute("SELECT symbol, SUM(shares) AS shares FROM trades WHERE user = :id GROUP BY symbol HAVING SUM(shares) > 0", id = session["user_id"])
+    rows = db.execute("SELECT symbol, SUM(shares) AS shares FROM trades WHERE user_id = :id GROUP BY symbol HAVING SUM(shares) > 0", id = session["user_id"])
     titles = ["Symbol", "Name", "Shares", "Price", "TOTAL"]
     tablerows = []
     cash = db.execute("SELECT * FROM users WHERE id = :id", id = session["user_id"])[0]["cash"]
@@ -78,7 +78,7 @@ def buy():
 @app.route("/history")
 @login_required
 def history():
-    rows = db.execute("SELECT * FROM trades WHERE user = :id", id = session["user_id"])
+    rows = db.execute("SELECT * FROM trades WHERE user_id = :id", id = session["user_id"])
     titles = ["Symbol", "Shares", "Price", "Transacted"]
     tablerows = []
     for i in range(0, len(rows)):
@@ -192,11 +192,11 @@ def sell():
             return apology("invalid number of shares")
 
            
-        totalshares = db.execute("SELECT SUM(shares) AS shares FROM trades WHERE user = :id AND symbol = :symbol", id = session["user_id"], symbol = rows["symbol"])
+        totalshares = db.execute("SELECT SUM(shares) AS shares FROM trades WHERE user_id = :id AND symbol = :symbol", id = session["user_id"], symbol = rows["symbol"])
         if int(request.form.get("shares")) > int(totalshares[0]["shares"]):
             return apology("not enough shares")
     
-        db.execute("INSERT INTO trades (id,user,symbol,price,shares,datetime) VALUES (NULL,:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = -int(request.form.get("shares")), datetime = datetime.utcnow().isoformat(" "))
+        db.execute("INSERT INTO trades (id,user_id,symbol,price,shares,datetime) VALUES (NULL,:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = -int(request.form.get("shares")), datetime = datetime.utcnow().isoformat(" "))
         db.execute("UPDATE users SET cash = cash+:earned WHERE id = :id", earned = rows["price"]*int(request.form.get("shares")), id = session["user_id"])
         return redirect(url_for("index"))
         
