@@ -44,7 +44,7 @@ def index():
     print(rows)
     for i in range(0, len(rows)):
         stock = lookup(rows[i]["symbol"])
-        assetvalue += stock["price"]
+        assetvalue += stock["price"]*int(rows[i]["shares"])
         tablerows.append([rows[i]["symbol"], stock["name"], rows[i]["shares"], usd(stock["price"]), usd(int(rows[i]["shares"])*float(stock["price"]))])
     return render_template("index.html", titles = titles, tablerows = tablerows, cash = usd(cash), assetvalue = usd(assetvalue))
 
@@ -68,7 +68,7 @@ def buy():
         if rows["price"]*int(request.form.get("shares")) > xdict[0]["cash"]:
             return apology("can't afford")
     
-        db.execute("INSERT INTO trades (id,user,symbol,price,shares,datetime) VALUES (NULL,:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = request.form.get("shares"), datetime = datetime.utcnow().isoformat(' '))
+        db.execute("INSERT INTO trades (id,user,symbol,price,shares,datetime) VALUES (NULL,:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = request.form.get("shares"), datetime = datetime.utcnow().isoformat(" "))
         db.execute("UPDATE users SET cash = cash-:spent WHERE id = :id", spent = rows["price"]*int(request.form.get("shares")), id = session["user_id"])
         return redirect(url_for("index"))
         
@@ -196,7 +196,7 @@ def sell():
         if int(request.form.get("shares")) > int(totalshares[0]["shares"]):
             return apology("not enough shares")
     
-        db.execute("INSERT INTO trades (id,user,symbol,price,shares,datetime) VALUES (NULL,:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = -int(request.form.get("shares")), datetime = datetime.utcnow().isoformat(' '))
+        db.execute("INSERT INTO trades (id,user,symbol,price,shares,datetime) VALUES (NULL,:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = -int(request.form.get("shares")), datetime = datetime.utcnow().isoformat(" "))
         db.execute("UPDATE users SET cash = cash+:earned WHERE id = :id", earned = rows["price"]*int(request.form.get("shares")), id = session["user_id"])
         return redirect(url_for("index"))
         
