@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block main %}
+<table class = "table table-striped">
+    <tr>
+        {% for title in titles %}
+            <th>{{title}}</th>
+        {% endfor %}
+    </tr>
+    {% for row in tablerows %}
+        <tr>
+            {% for value in row %}
+                <td>{{value}}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan = "4">CASH</td>
+        <td>{{cash}}</td>
+    </tr>
+    <tr>
+        <td colspan = "4" bold></td>
+        <td><b>{{assetvalue}}</b></td>
+    </tr>
+</table>
+{% endblock %}
