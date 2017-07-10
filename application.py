@@ -68,7 +68,7 @@ def buy():
         if rows["price"]*int(request.form.get("shares")) > xdict[0]["cash"]:
             return apology("can't afford")
     
-        db.execute("INSERT INTO trades (user,symbol,price,shares,datetime) VALUES (:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = request.form.get("shares"), datetime = datetime.utcnow().isoformat(" "))
+        db.execute("INSERT INTO trades (user_id,symbol,price,shares,datetime) VALUES (:user,:symbol,:price,:shares,:datetime)", user = session["user_id"], symbol = rows["symbol"], price = rows["price"], shares = request.form.get("shares"), datetime = datetime.utcnow().isoformat(" "))
         db.execute("UPDATE users SET cash = cash-:spent WHERE id = :id", spent = rows["price"]*int(request.form.get("shares")), id = session["user_id"])
         return redirect(url_for("index"))
         
