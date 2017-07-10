@@ -40,7 +40,7 @@ def index():
     titles = ["Symbol", "Name", "Shares", "Price", "TOTAL"]
     tablerows = []
     cash = db.execute("SELECT * FROM users WHERE id = :id", id = session["user_id"])[0]["cash"]
-    assetvalue = cash
+    assetvalue = float(cash)
     print(rows)
     for i in range(0, len(rows)):
         stock = lookup(rows[i]["symbol"])
